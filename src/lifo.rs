@@ -34,6 +34,7 @@ pub struct Lifo<T> {
     lifo.push(2);
     lifo.push(0);
     lifo.push(4);
+    
     let item = lifo.pop();
     assert_eq!(item.unwrap(), 4);
     assert_eq!(lifo.is_empty(), false);

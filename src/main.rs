@@ -1,60 +1,46 @@
-use std::collections::vec_deque::IntoIter;
-use std::collections::VecDeque;
-use std::iter::IntoIterator;
 
-pub struct IsraeliQueue<I>{
-    queue: VecDeque<I>,
+mod israeliqueue;
+pub use israeliqueue::IsraeliQueue;
+
+#[derive(Debug)]
+struct Person {
+    first_name: String,
+    last_name: String,
 }
-impl<I> IsraeliQueue<I> {
-    pub fn new() -> IsraeliQueue<I> {
-        IsraeliQueue {
-            queue: VecDeque::new(),
+
+impl Person {
+    pub fn new(first_name: String, last_name: String) -> Person {
+        Person {
+            first_name,
+            last_name,
         }
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.queue.is_empty()
-    }
-
-    pub fn peek(&self) -> Option<&I> {
-        self.queue.get(0)
-    }
-
-    pub fn dequeue(&mut self) -> Option<I> {
-        self.queue.pop_front()
-    }
-
-    pub fn queue(&mut self, item: I, comparator: Option<&Fn(&I, &I) -> bool>) -> usize {
-        if comparator.is_none() {
-            self.queue.push_front(item);
-            return self.queue.len() - 1;
-        }
-
-        let mut found_index = self.queue.len();
-
-        for (index, element) in self.queue.iter().enumerate() {
-            if comparator.unwrap()(&item, element) {
-                found_index = index + 1;
-                break;
-            }
-        }
-
-        self.queue.insert(found_index, item);
-        found_index
     }
 }
-impl<I> IntoIterator for IsraeliQueue<I> {
-    type Item = I;
-    type IntoIter = IntoIter<I>;
 
-    fn into_iter(self) -> IntoIter<I> {
-        self.queue.into_iter()
-    }
+fn person_comparator(a: &Person, b: &Person) -> bool {
+    a.last_name == b.last_name
 }
 
 
 fn main() {
-    let vector: VecDeque<&dyn &Show> = VecDeque::with_capacity(10);
+    let people = vec![
+        Person::new(String::from("Bruno"), String::from("Vieira")),
+        Person::new(String::from("Bruno"), String::from("Pereira")),
+        Person::new(String::from("Bruno"), String::from("Ferreira")),
+        Person::new(String::from("Carla"), String::from("Pereira")),
+        Person::new(String::from("Thaís"), String::from("Pereira")),
+        Person::new(String::from("Alex"), String::from("Ferreira")),
+        Person::new(String::from("Maria"), String::from("Vieira")),
+        Person::new(String::from("João"), String::from("das Couves")),
+    ];
 
-    println!(vector.toString());
+    let mut people_queue = IsraeliQueue::new();
+
+
+    for person in people {
+        people_queue.queue(person, Some(&person_comparator));
+    }
+    for person in people_queue.into_iter() {
+        println!("{:?}", person);
+    }
 }
